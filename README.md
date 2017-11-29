@@ -4,9 +4,51 @@ Self-Driving Car Engineer Nanodegree Program
 ---
 
 ## Project Summary
-    I implemented a PID controller in C++ to drive a car on track in a simulator. The car can reach as fast as 80 mph. 
-    captured drive 
+I implemented a PID controller in C++ to keep a car stay on track. Thec controller outputs steering angle and throttle value using cross track error, driving angle, and driving speed as input. 
 
+In the following output demod, the car can reach as fast as 80 mph.
+
+![final](./gif/final.gif) 
+
+## PID Controller
+* P - Proportional: Control is proportional to error. Variable Kp determines how fast the control response to the error. The bigger the Kp is, the faster the car reaches the reference state. However if Kp is too big, it overshoots and the car drives off track.
+
+When a smaller Kp is used, it takes the car longer to return to the reference track. When the car is turing, it gets very close to the outer lane, since it cannot respond to the CTE fast enough.
+
+![small_kp](./gif/small_kp_v2.gif) 
+
+On the other hand, when Kp is large, there is oscillation due to overshoot.
+
+![large_kp](./gif/large_kp_v2.gif) 
+
+* I - Integral: Integral controller is used when there is systematic bias, Since there isn't any in this case, integral controller isn't used.
+
+* D - Derivative: Control is proportional to the rate of error. The goal of a derviative controller is to bring the rate of error to zero. It serves a damping effect, reducing overshoot. 
+
+When Kd is small, it is under damped - the car still oscillates a lot.
+
+![small_kd](./gif/small_kd.gif) 
+
+Larger Kd delays the controller responding to errors. Captured drive below shows that the car takes longer to start turning when there are curves
+
+![small_kd](./gif/small_kd.gif) 
+
+## Tuning
+
+For this controller I used manual tuning. I first set all PID controller variables to zeros except for Kp. Then I increased Kp until observing that the car drives ok on most roads, except for curvers. Then I increased Kd untill a successful lap is observed.
+
+## Other Improvement
+
+In order for the car to drive successfully, a P-controller for speed is also used, besides the one for steering angle. Just like when human drive a car, we slow down when there is a turn. Thus target speed is based on the driving condition. The codes that specifies it is shown below.
+
+```C
+if (fabs(cte) > 1) {
+			  if (fabs(angle) > 5) {speed_target = 40;}
+			  else if (fabs(angle) > 4) {speed_target = 50;}
+			  else if (fabs(angle) > 3) {speed_target = 60;}
+			  else if (fabs(angle) > 2) {speed_target = 70;}
+		  }
+```
 
 ## Dependencies
 
